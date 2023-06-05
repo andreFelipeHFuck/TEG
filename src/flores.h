@@ -4,9 +4,9 @@
 #include <math.h>
 
 enum especie {
-    Setosa,
-    Virginica,
-    Versicolor
+    SETOSA,
+    VIRGINICA,
+    VERSICOLOR
 };
 typedef enum especie Especie;
 

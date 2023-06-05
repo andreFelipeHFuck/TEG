@@ -19,15 +19,16 @@ void gera_grafo(char nome_arquivo_entrada[], char nome_arquivo_saida[]){
     gcc main.c grafo.c flores.c matriz.c matriz_adjacencias.c -o main -lm
 */
 
-int main(){
-   Flores *flores = le_arquivo_iris("IrisDataset.csv");
-   Grafo *grafo = iris_para_grafo(flores, 0.21);
-   Matriz_adj *matriz = cria_matriz_adj(grafo);
-   Clusters *clusters = clusterizacao(matriz, flores);
-   escreve_clusters(clusters, "assets/clusters.csv");
-   destroi_flores(flores);
-   destroi_grafo(grafo);
-   destroi_matriz_adj(matriz);
-   destroi_clusters(clusters);
+//    Flores *flores = le_arquivo_iris("IrisDataset.csv");
+//    Grafo *grafo = iris_para_grafo(flores, 0.21);
+//    Matriz_adj *matriz = cria_matriz_adj(grafo);
+//    Clusters *clusters = clusterizacao(matriz, flores);
+//    escreve_clusters(clusters, "assets/clusters.csv");
+//    destroi_flores(flores);
+//    destroi_grafo(grafo);
+//    destroi_matriz_adj(matriz);
+//    destroi_clusters(clusters);
 
+int main(){
+    log_clusters(0.06, 5, 0.001);
 }

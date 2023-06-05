@@ -9,13 +9,13 @@ Flores* cria_flores(){
 
 Especie escolher_especie(char especie[]){
     if(strcmp(especie,"Setosa") == 0)
-        return Setosa;
+        return SETOSA;
 
     if(strcmp(especie, "Versicolor") == 0)
-        return Versicolor;
+        return VERSICOLOR;
 
     if(strcmp(especie, "Virginica") == 0)
-        return Virginica;
+        return VIRGINICA;
 }
 
 void adicionar_flor(Flores *flores, Flor flor){
@@ -60,13 +60,13 @@ Flores* le_arquivo_iris(char nome_arquivo[]){
 }
 
 void print_especie(Especie especie){
-    if(especie == Setosa)
+    if(especie == SETOSA)
         printf("Setosa");
 
-    if(especie == Versicolor)
+    if(especie == VERSICOLOR)
         printf("Versicolor");
 
-    if(especie == Virginica)
+    if(especie == VIRGINICA)
         printf("Virginica");
 }
 

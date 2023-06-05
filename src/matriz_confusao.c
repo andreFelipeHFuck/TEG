@@ -52,8 +52,8 @@ Cluster cria_cluster(){
     Cluster cluster;
     cluster.num = 0;
     cluster.vertices = NULL;
-    cluster.centro_geometrico = 1.0;
-    cluster.especie = Setosa;
+    cluster.centro_geometrico = NULL;
+    cluster.especie = SETOSA;
     return cluster;
 }
 
@@ -129,10 +129,9 @@ void print_cluster(Clusters *clusters)
 {
     for (int i = 0; i < clusters->num; i++)
     {
-        printf("CLUSER %d = %d, CENTRO: %f TIPO: ",
+        printf("CLUSER %d = %d, TIPO: ",
                i + 1,
-               clusters->clusters[i].num,
-               clusters->clusters[i].centro_geometrico
+               clusters->clusters[i].num               
                );
 
         print_especie(clusters->clusters[i].especie);
@@ -171,43 +170,44 @@ Especie votacao_especie(Flores *flores, Cluster *cluster){
     int num_setosa = 0, num_versicolor = 0, num_virginica = 0;
 
     for(int i=0; i<cluster->num; i++){
-        if(flores->elem[cluster->vertices[i]].especie == Setosa)
+        if(flores->elem[cluster->vertices[i]].especie == SETOSA)
             num_setosa++;
 
-        if(flores->elem[cluster->vertices[i]].especie == Versicolor)
+        if(flores->elem[cluster->vertices[i]].especie == VERSICOLOR)
             num_versicolor++;
 
-        if(flores->elem[cluster->vertices[i]].especie == Virginica)
+        if(flores->elem[cluster->vertices[i]].especie == VIRGINICA)
             num_virginica++;
     }
 
     if(num_setosa >= num_versicolor && num_setosa >= num_virginica)
-        return Setosa;
+        return SETOSA;
 
     if(num_versicolor >= num_setosa && num_versicolor >= num_virginica)
-        return Versicolor;
+        return VERSICOLOR;
     
     if(num_virginica >= num_setosa && num_virginica >= num_versicolor)
-        return Virginica;
+        return VIRGINICA;
 }
 
-float centro_geometrico(Flores *flores, Cluster *cluster){
-    float sepal_length = 0;
-    float sepal_width = 0;
-    float petal_length = 0;
-    float petal_width = 0;
+Flor* centro_geometrico(Flores *flores, Cluster *cluster){
+    Flor *flor = malloc(sizeof(Flor));
+    flor->sepal_length = 0;
+    flor->sepal_width = 0;
+    flor->petal_length = 0;
+    flor->petal_width = 0;
 
     for(int i=0; i<cluster->num; i++){
-        sepal_length += flores->elem[cluster->vertices[i]].sepal_length;
+        flor->sepal_length += flores->elem[cluster->vertices[i]].sepal_length;
 
-        sepal_width += flores->elem[cluster->vertices[i]].sepal_length;
+        flor->sepal_width += flores->elem[cluster->vertices[i]].sepal_length;
 
-        petal_length += flores->elem[cluster->vertices[i]].petal_length;
+        flor->petal_length += flores->elem[cluster->vertices[i]].petal_length;
 
-        petal_width += flores->elem[cluster->vertices[i]].petal_width;
+        flor->petal_width += flores->elem[cluster->vertices[i]].petal_width;
     }
     
-    return (double) (1.0/cluster->num) * (sepal_length + sepal_width + petal_length + petal_width);
+    return flor;
 }
 
 Clusters* clusterizacao(Matriz_adj *matriz_adj, Flores *flores)
@@ -225,7 +225,7 @@ Clusters* clusterizacao(Matriz_adj *matriz_adj, Flores *flores)
         dfs(vertice, matriz_adj, vertice_marcado, &cluster);
 
         cluster.especie = votacao_especie(flores, &cluster);
-        cluster.centro_geometrico = centro_geometrico(flores, &cluster);
+        //cluster.centro_geometrico = centro_geometrico(flores, &cluster);
         adicionar_cluster(clusters, cluster);
 
         vertice = busca_vertices_nao_marcado(matriz_adj, vertice_marcado);
@@ -235,28 +235,29 @@ Clusters* clusterizacao(Matriz_adj *matriz_adj, Flores *flores)
     return clusters;
 }
 
-void log_clusters(int intera, float num){
-    float metrica = 0.3;
+void log_clusters(float metrica, int num_iteracao, float desconto){
 
     Flores *flores = le_arquivo_iris("../IrisDataset.csv");
     Grafo *grafo;
     Matriz_adj *matriz;
     Clusters *clusters;
 
-    FILE *file = fopen("log.txt", "wd");
+    FILE *file = fopen("assets/log.txt", "wd");
 
-    for(int i=0; i<intera; i++){
+    for(int i=0; i<num_iteracao; i++){
         printf("%f\n", metrica);
         grafo = iris_para_grafo(flores, metrica);
         matriz = cria_matriz_adj(grafo);
 
         clusters = clusterizacao(matriz, flores);
-        fprintf(file, "\n%d - NUMERO DE CLUSTERS %d\n",i, clusters->num);
+        fprintf(file, "%d - NUMERO DE CLUSTERS %d\nMETRICA: %f\n",
+                i, 
+                clusters->num,
+                metrica);
 
         for(int j=0; j<clusters->num; j++){
-            fprintf(file, "NUMERO DE VERTICES: %d\nCENTRO: %3.f\nTIPO: %d\n", 
+            fprintf(file, "NUMERO DE VERTICES: %d\nTIPO: %d\n", 
                      clusters->clusters[j].num,
-                     clusters->clusters[j].centro_geometrico,
                      clusters->clusters[j].especie
                     );
         }
@@ -265,7 +266,7 @@ void log_clusters(int intera, float num){
 
         clusters = destroi_clusters(clusters);
         destroi_matriz_adj(matriz);
-        metrica -= num;
+        metrica -= desconto;
     }
     fclose(file);
     destroi_flores(flores);
