@@ -16,3 +16,4 @@ void normaliza_matriz(Matriz *matriz);
 Grafo* iris_para_grafo(Flores *flores, float metrica);
 void print_matriz(Matriz *matriz);
 void destroi_matriz(Matriz *matriz);
+float distancia_euclidiana(Flor f1, Flor f2);

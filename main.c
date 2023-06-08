@@ -30,5 +30,19 @@ void gera_grafo(char nome_arquivo_entrada[], char nome_arquivo_saida[]){
 //    destroi_clusters(clusters);
 
 int main(){
-    log_clusters(0.06, 5, 0.001);
+    // Aglutinar clusters 
+    // 0.057000
+    Flores *flores = le_arquivo_iris("IrisDataset.csv");
+    Grafo *grafo = iris_para_grafo(flores, 0.057);
+    Matriz_adj *matriz = cria_matriz_adj(grafo);
+    Clusters *clusters = clusterizacao(matriz, flores);
+    Clusters *novo_clusters = minimizar_num_clusters(flores, clusters);
+    Matriz_confusao *matriz_conf = cria_matriz_confusao();
+    calcula_matriz_confusao(flores, novo_clusters, matriz_conf);
+    escreve_clusters(novo_clusters, "assets/clusters.csv");
+    escreve_arquivo_grafo_txt(grafo, "assets/grafo.txt");
+    destroi_flores(flores);
+    destroi_grafo(grafo);   
+    destroi_matriz_adj(matriz);
+    destroi_clusters(clusters);
 }

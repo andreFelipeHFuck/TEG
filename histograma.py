@@ -1,40 +1,42 @@
 import matplotlib.pyplot as plt
+import numpy as np
 import csv
-from enum import Enum 
 
-class Especies(Enum):
-    SETOSA = 0
-    VIRGINICA = 1
-    VERSICOLOR = 2
+def tipo_para_string(tipo: int)->str:
+    if tipo == 0:
+        return "Setosa"
+    if tipo == 1:
+        return "Virginica"
+    if tipo == 2:
+        return "Versicolor"
 
 def leitura_clusters(nome_arquivo: str) -> tuple:
-    tamanhos = []
-    tipos = []
+    tamanhos = []   
+    especies = []
 
     with open(nome_arquivo) as file:
         reader = csv.reader(file)
 
         for row in reader:
-            tamanhos.append(row[0])
-            tipos.append(row[1])
+            tamanhos.append(int(row[0]))
+            especies.append(tipo_para_string(int(row[1])))
         
-    return (tipos, tamanhos)
+    return (especies, tamanhos)
 
 def plot_histograma(nome_arquivo: str) -> None:
-    tipos = ["Setosa", "Virginica", "Versicolor"]
-    tamanhos = [40, 50, 60]
+    especies, tamanhos = leitura_clusters(nome_arquivo)
+    
+    plt.figure(figsize=(10, 10))
+    plt.rcParams['xtick.labelsize'] = 30
+    plt.rcParams['ytick.labelsize'] = 20
+    plt.title("Clusters de Iris", fontsize = 30)
+    colors = ['red', 'green', 'blue']
 
-    plt.bar(tipos, tamanhos) 
+    plt.bar(especies, tamanhos, color=colors)
+    plt.yticks([0, 15, 30, 45, 60])
 
-    plt.title("Iris Dataset")
-    plt.ylabel("Num")
+    plt.savefig("assets/histograma.png")
 
-    plt.xticks(range(len(tipos)))
-      
-    plt.show()
-
-def main():
-    ...
 
 if __name__ == "__main__":
     plot_histograma("assets/clusters.csv")
