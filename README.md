@@ -54,7 +54,7 @@ Contudo não foi possível achar uma métrica que gerasse apenas três clusters.
 
 ## Avalição
 
-A partir desse treinamento foi possível separar o grafo em três clusters, o histograma abaixo representa a relação entre do número de elementos de cada cluster e a sua especie.
+A partir desse treinamento foi possível separar o grafo em três clusters, o histograma abaixo representa a relação entre o número de elementos de cada cluster e a sua especie.
 
 ![grafico numero de elementos de cada especie](assets/histograma.png)
 
