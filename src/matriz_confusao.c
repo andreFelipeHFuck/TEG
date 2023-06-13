@@ -95,7 +95,6 @@ void dfs(int vertice, Matriz_adj *matriz_adj, int *vertice_marcado, Cluster *clu
     }
 
     destroi_pilha(pilha);
-    free(pilha);
 }
 
 int busca_vertices_nao_marcado(Matriz_adj *matriz_adj, int *vertice_marcado)
@@ -126,17 +125,24 @@ void adicionar_cluster(Clusters *clusters, Cluster cluster)
     clusters->clusters[clusters->num - 1] = cluster;
 }
 
-void print_cluster(Clusters *clusters)
+void print_cluster(Flores *flores, Clusters *clusters)
 {
     for (int i = 0; i < clusters->num; i++)
     {
         printf("CLUSER %d = %d, TIPO: ",
-               i + 1,
+               i,
                clusters->clusters[i].num               
                );
 
         print_especie(clusters->clusters[i].especie);
         printf("\n");
+
+        for(int j=0; j<clusters->clusters[i].num; j++){
+            printf("%d, ", clusters->clusters[i].vertices[j]);
+            print_especie(flores->elem[clusters->clusters[i].vertices[j]].especie);
+            printf("\n");
+        }
+        
     
     }
 }
@@ -375,6 +381,7 @@ Matriz_confusao* cria_matriz_confusao(){
 }
 
 void print_matriz_confusao(Matriz_confusao *matriz){
+    printf("Matriz de confusao\n");
     for(int i=0; i<matriz->tam; i++){
         for(int j=0; j<matriz->tam; j++){
             printf("%d ", matriz->mat[i][j]);
@@ -401,26 +408,31 @@ void calcula_matriz_confusao(Flores *flores, Clusters *clusters, Matriz_confusao
                 matriz->mat[clusters->clusters[i].especie][VERSICOLOR]++;
         }
     }
-
-    print_matriz_confusao(matriz);
 }
 
-
-int acuracia(int especie, Matriz_confusao *matriz){
-
-    int tp = 0, fn = 0, fp = 0, tn = 0;
-
-    tp = matriz->mat[especie][especie];
+float calcula_fn(int especie, Matriz_confusao *matriz){
+    float fn = 0;
 
     for(int j=0; j<matriz->tam; j++){
         if(j != especie)
             fn += matriz->mat[especie][j];
     }
+    return fn;
+}
+
+float calcaula_fp(int especie, Matriz_confusao *matriz){
+    float fp = 0;
 
     for(int i=0; i<matriz->tam; i++){
         if(i != especie)
             fp += matriz->mat[i][especie];
     }
+
+    return fp;
+}
+
+float calcula_tn(int especie, Matriz_confusao *matriz){
+    float tn = 0;
 
     for(int i=0; i<matriz->tam; i++){
         for(int j=0; j<matriz->tam; j++){
@@ -429,7 +441,37 @@ int acuracia(int especie, Matriz_confusao *matriz){
         }
     }
 
+    return tn;
+}
+
+float acuracia(int especie, Matriz_confusao *matriz){
+    float tp = matriz->mat[especie][especie];
+    float fn = calcula_fn(especie, matriz);
+    float fp = calcaula_fp(especie, matriz);
+    float tn = calcula_tn(especie, matriz);
+
     return (tp + tn)/(tp + fp + tn + fn);
+}
+
+float precisin(int especie, Matriz_confusao *matriz){
+    float tp = matriz->mat[especie][especie];
+    float fp = calcaula_fp(especie, matriz);
+
+    return tp / (tp + fp);
+}
+
+float recall(int especie, Matriz_confusao *matriz){
+    float tp = matriz->mat[especie][especie];
+    float fn = calcula_fn(especie, matriz);
+
+    return tp / (tp + fn);
+}
+
+float f1_score(int especie, Matriz_confusao *matriz){
+    float p = precisin(especie, matriz);
+    float r = recall(especie, matriz);
+
+    return (2 * p * r) / (p + r);
 }
 
 
